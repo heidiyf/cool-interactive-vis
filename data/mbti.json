@@ -1,0 +1,18 @@
+[
+  {"type":"INFJ","count":1470,"words_per_comment":96.4,"variance":148.2,"http_per_comment":0.0659,"qm_per_comment":0.2090,"E_I":"I","N_S":"N","T_F":"F","J_P":"J","temperament":"NF"},
+  {"type":"INFP","count":1832,"words_per_comment":88.3,"variance":162.5,"http_per_comment":0.0754,"qm_per_comment":0.2025,"E_I":"I","N_S":"N","T_F":"F","J_P":"P","temperament":"NF"},
+  {"type":"INTJ","count":1091,"words_per_comment":102.1,"variance":154.7,"http_per_comment":0.0636,"qm_per_comment":0.2148,"E_I":"I","N_S":"N","T_F":"T","J_P":"J","temperament":"NT"},
+  {"type":"INTP","count":1304,"words_per_comment":98.6,"variance":168.3,"http_per_comment":0.0708,"qm_per_comment":0.2216,"E_I":"I","N_S":"N","T_F":"T","J_P":"P","temperament":"NT"},
+  {"type":"ENFJ","count":190,"words_per_comment":85.2,"variance":142.1,"http_per_comment":0.0533,"qm_per_comment":0.2131,"E_I":"E","N_S":"N","T_F":"F","J_P":"J","temperament":"NF"},
+  {"type":"ENFP","count":675,"words_per_comment":82.4,"variance":178.2,"http_per_comment":0.0505,"qm_per_comment":0.2273,"E_I":"E","N_S":"N","T_F":"F","J_P":"P","temperament":"NF"},
+  {"type":"ENTJ","count":231,"words_per_comment":108.3,"variance":160.4,"http_per_comment":0.0532,"qm_per_comment":0.2400,"E_I":"E","N_S":"N","T_F":"T","J_P":"J","temperament":"NT"},
+  {"type":"ENTP","count":685,"words_per_comment":92.1,"variance":172.8,"http_per_comment":0.0483,"qm_per_comment":0.2210,"E_I":"E","N_S":"N","T_F":"T","J_P":"P","temperament":"NT"},
+  {"type":"ISFJ","count":166,"words_per_comment":78.2,"variance":129.6,"http_per_comment":0.0706,"qm_per_comment":0.2010,"E_I":"I","N_S":"S","T_F":"F","J_P":"J","temperament":"SF"},
+  {"type":"ISFP","count":271,"words_per_comment":72.5,"variance":144.8,"http_per_comment":0.0883,"qm_per_comment":0.2164,"E_I":"I","N_S":"S","T_F":"F","J_P":"P","temperament":"SF"},
+  {"type":"ISTJ","count":205,"words_per_comment":85.1,"variance":124.3,"http_per_comment":0.0612,"qm_per_comment":0.2149,"E_I":"I","N_S":"S","T_F":"T","J_P":"J","temperament":"ST"},
+  {"type":"ISTP","count":337,"words_per_comment":80.3,"variance":138.2,"http_per_comment":0.0810,"qm_per_comment":0.2216,"E_I":"I","N_S":"S","T_F":"T","J_P":"P","temperament":"ST"},
+  {"type":"ESFJ","count":42,"words_per_comment":70.1,"variance":117.5,"http_per_comment":0.0451,"qm_per_comment":0.1950,"E_I":"E","N_S":"S","T_F":"F","J_P":"J","temperament":"SF"},
+  {"type":"ESFP","count":48,"words_per_comment":68.3,"variance":121.9,"http_per_comment":0.0478,"qm_per_comment":0.2001,"E_I":"E","N_S":"S","T_F":"F","J_P":"P","temperament":"SF"},
+  {"type":"ESTJ","count":39,"words_per_comment":80.4,"variance":114.8,"http_per_comment":0.0423,"qm_per_comment":0.1978,"E_I":"E","N_S":"S","T_F":"T","J_P":"J","temperament":"ST"},
+  {"type":"ESTP","count":89,"words_per_comment":75.2,"variance":127.6,"http_per_comment":0.0553,"qm_per_comment":0.2050,"E_I":"E","N_S":"S","T_F":"T","J_P":"P","temperament":"ST"}
+]

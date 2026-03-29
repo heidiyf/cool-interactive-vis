@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Type in Every Line — MBTI Writing Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor-outer"></div>
+<div class="cursor-dot"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 1 — HERO
+     ════════════════════════════════════════════════════════════════════════ -->
+<section id="intro-hero">
+  <canvas id="star-canvas"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-tag">8,675 forum posts &nbsp;·&nbsp; 16 MBTI personality types &nbsp;·&nbsp; PersonalityCafe dataset</div>
+    <h1 class="hero-title">Type in Every Line</h1>
+    <p class="hero-sub">Does your personality shape the way you write?<br>
+    This visualization explores how 16 MBTI types differ in verbosity, curiosity, and sharing habits across thousands of online posts.</p>
+
+    <!-- MBTI dimension cards -->
+    <div class="dim-cards">
+      <div class="dim-card">
+        <div class="dim-letter" style="color:#4ecdc4">E / I</div>
+        <div class="dim-name">Energy Direction</div>
+        <div class="dim-desc">Extraverts direct energy outward to people &amp; action. Introverts direct energy inward to ideas &amp; reflection.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-letter" style="color:#9b5de5">N / S</div>
+        <div class="dim-name">Information Style</div>
+        <div class="dim-desc">Intuitives focus on abstract patterns &amp; future possibilities. Sensors focus on concrete facts &amp; present details.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-letter" style="color:#F4A261">T / F</div>
+        <div class="dim-name">Decision Making</div>
+        <div class="dim-desc">Thinkers decide through logic &amp; objective analysis. Feelers decide through empathy &amp; personal values.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-letter" style="color:#52B788">J / P</div>
+        <div class="dim-name">World Approach</div>
+        <div class="dim-desc">Judgers prefer structure, plans &amp; closure. Perceivers prefer flexibility, openness &amp; spontaneity.</div>
+      </div>
+    </div>
+
+    <!-- Quick quiz invite (collapsible) -->
+    <div id="quiz-wrap">
+      <button class="quiz-toggle-btn" id="quiz-toggle">
+        <span id="quiz-toggle-label">Not sure of your type? Take a quick 8-question quiz</span>
+        <span class="quiz-toggle-arrow" id="quiz-toggle-arrow">↓</span>
+      </button>
+
+      <div id="quiz-body" class="quiz-body-collapsed">
+        <div class="quiz-inner">
+          <div class="quiz-progress-wrap">
+            <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+          </div>
+          <div class="quiz-q-num" id="quiz-q-num">Question 1 of 8</div>
+          <div class="quiz-question" id="quiz-question">Loading…</div>
+          <div class="quiz-options" id="quiz-options"></div>
+        </div>
+
+        <!-- Result (hidden until quiz done) -->
+        <div class="quiz-result" id="quiz-result">
+          <div class="result-type-label">Your personality type is</div>
+          <div class="result-type" id="result-type"></div>
+          <div class="result-role" id="result-role"></div>
+          <img class="result-avatar" id="result-avatar" src="" alt="" />
+          <div class="result-desc" id="result-desc"></div>
+          <button class="btn-jump" id="btn-jump">See my type highlighted in the data ↓</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow">&#8595;</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 2 — VISUALIZATION
+     ════════════════════════════════════════════════════════════════════════ -->
+<div id="viz-root">
+
+  <header>
+    <h1>Type in Every Line</h1>
+    <p>How does your personality shape the way you write? &nbsp;Decoding 8,675 forum posts across 16 MBTI types.</p>
+  </header>
+
+  <div id="controls">
+    <div class="axis-select-group">
+      <span class="ctrl-label">X Axis</span>
+      <div class="select-wrap">
+        <select id="x-sel">
+          <option value="words_per_comment">Avg. Words per Post</option>
+          <option value="http_per_comment">Links per Post</option>
+          <option value="qm_per_comment">Questions per Post</option>
+          <option value="variance">Writing Variability</option>
+        </select>
+        <span class="select-chevron">&#8964;</span>
+      </div>
+    </div>
+    <div class="axis-select-group">
+      <span class="ctrl-label">Y Axis</span>
+      <div class="select-wrap">
+        <select id="y-sel">
+          <option value="qm_per_comment">Questions per Post</option>
+          <option value="words_per_comment">Avg. Words per Post</option>
+          <option value="http_per_comment">Links per Post</option>
+          <option value="variance">Writing Variability</option>
+        </select>
+        <span class="select-chevron">&#8964;</span>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <span class="ctrl-label">Highlight:</span>
+    <div class="filter-wrap">
+      <button class="f-btn" data-dim="E_I" data-val="I" title="Introversion — focuses energy inward">Introvert</button>
+      <button class="f-btn" data-dim="E_I" data-val="E" title="Extraversion — focuses energy outward">Extravert</button>
+      <button class="f-btn" data-dim="N_S" data-val="N" title="Intuition — focuses on patterns &amp; big picture">Intuitive</button>
+      <button class="f-btn" data-dim="N_S" data-val="S" title="Sensing — focuses on concrete facts &amp; details">Sensing</button>
+      <button class="f-btn" data-dim="T_F" data-val="T" title="Thinking — decides through logic &amp; analysis">Thinking</button>
+      <button class="f-btn" data-dim="T_F" data-val="F" title="Feeling — decides through empathy &amp; values">Feeling</button>
+      <button class="f-btn" data-dim="J_P" data-val="J" title="Judging — prefers structure &amp; closure">Judging</button>
+      <button class="f-btn" data-dim="J_P" data-val="P" title="Perceiving — prefers flexibility &amp; openness">Perceiving</button>
+    </div>
+    <div class="sep"></div>
+    <div class="play-stack">
+      <button id="play-btn">&#9654; Play Story</button>
+      <div id="dot-row"></div>
+    </div>
+    <div class="sep"></div>
+    <button id="reset-zoom-btn" class="hidden">&#8857; Reset Zoom</button>
+  </div>
+
+  <div id="zoom-hint">&#128269; Scroll to zoom &nbsp;&middot;&nbsp; Drag background to pan &nbsp;&middot;&nbsp; Click any bubble or bar to inspect</div>
+
+  <div id="main">
+    <div id="left-col">
+
+      <div id="story-panel">
+        <div id="story-title">Explore MBTI Writing Styles</div>
+        <div id="story-sub">Start by clicking a bubble to inspect one type, brushing across the bars below, or pressing <strong style="color:#e0e4f4">&#9654; Play Story</strong> for a guided walkthrough.</div>
+        <div id="story-ann">A clear pattern in the data is that Intuitive types tend to write longer, more question-heavy posts, while Sensing types are generally shorter and more link-focused.</div>
+        <div id="quick-start">
+          <span class="qs-pill">Try clicking a bubble</span>
+          <span class="qs-pill">Try brushing below</span>
+          <span class="qs-pill">Try changing the axes</span>
+        </div>
+      </div>
+
+      <!-- Chart Guide -->
+      <div id="chart-guide">
+        <div class="guide-item">
+          <span class="guide-icon">X &rarr;</span>
+          <div class="guide-text">
+            <strong id="guide-x-label">Avg. Words per Post</strong>
+            <span id="guide-x-desc">Average number of words written per forum post</span>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-icon">Y &uarr;</span>
+          <div class="guide-text">
+            <strong id="guide-y-label">Questions per Post</strong>
+            <span id="guide-y-desc">Average number of question marks used per post</span>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-icon">&#9679; Size</span>
+          <div class="guide-text">
+            <strong>Community Size</strong>
+            <span>Bubble radius = number of dataset users with that type</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="chart-wrap"><svg id="chart"></svg></div>
+
+      <div id="bar-wrap">
+        <div class="panel-title">All 16 Types — Ranked by Current X Metric <span class="panel-hint">Drag across bars to filter the scatter above</span></div>
+        <svg id="bar-chart"></svg>
+      </div>
+    </div>
+
+    <div id="resize-handle" title="Drag to resize panel">
+      <div class="rh-grip"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <div id="right-panel">
+      <div id="avatar-card">
+        <img id="avatar-img" src="" alt="" />
+        <div id="avatar-name"></div>
+        <div id="avatar-role"></div>
+      </div>
+
+      <div id="donut-card">
+        <div class="panel-title">Community by Temperament
+          <span class="panel-hint">Click a slice to filter</span>
+        </div>
+        <div class="donut-legend-row">
+          <span class="donut-leg" style="color:#457B9D">NT = Intuitive Thinkers</span>
+          <span class="donut-leg" style="color:#F4A261">NF = Intuitive Feelers</span>
+          <span class="donut-leg" style="color:#52B788">SF = Sensing Feelers</span>
+          <span class="donut-leg" style="color:#9B5DE5">ST = Sensing Thinkers</span>
+        </div>
+        <svg id="donut-chart"></svg>
+      </div>
+
+      <div id="detail-card">
+        <div class="placeholder">Click any bubble or bar<br>to see that type's full writing profile.</div>
+      </div>
+    </div>
+  </div><!-- #main -->
+
+  <div id="bottom">
+    <span class="bottom-label">Temperament Group</span>
+    <div class="leg-item"><div class="leg-dot" style="background:#457B9D"></div>NT &mdash; Intuitive Thinkers</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#F4A261"></div>NF &mdash; Intuitive Feelers</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#52B788"></div>SF &mdash; Sensing Feelers</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9B5DE5"></div>ST &mdash; Sensing Thinkers</div>
+    <div id="size-legend">
+      <svg width="58" height="16">
+        <circle cx="6"  cy="8" r="3.5" fill="#2a2a44"/>
+        <circle cx="20" cy="8" r="6.5" fill="#2a2a44"/>
+        <circle cx="40" cy="8" r="11"  fill="#2a2a44"/>
+      </svg>
+      Bubble size = number of users
+    </div>
+  </div>
+
+  <footer>
+    Data: <a href="https://www.kaggle.com/datasets/datasnaek/mbti-type" target="_blank">MBTI Personality Type Dataset &mdash; Kaggle / PersonalityCafe</a>
+    &nbsp;&middot;&nbsp; MBTI Framework: <a href="https://www.myersbriggs.org/my-mbti-personality-type/myers-briggs-overview/" target="_blank">Myers &amp; Briggs Foundation</a>
+    &nbsp;&middot;&nbsp; Inspired by <a href="https://observablehq.com/@mbostock/the-wealth-health-of-nations" target="_blank">Wealth &amp; Health of Nations (Bostock)</a>
+    &nbsp;&middot;&nbsp; Built by Heidi Wang
+  </footer>
+
+</div><!-- #viz-root -->
+
+<div id="tip"></div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="js/intro.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
