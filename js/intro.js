@@ -128,20 +128,25 @@ function renderQuestion(index) {
   const total = QUIZ_QUESTIONS.length;
   const pct   = (index / total) * 100;
 
-  const bar  = document.getElementById("quiz-progress-bar");
-  const num  = document.getElementById("quiz-q-num");
-  const text = document.getElementById("quiz-question");
-  const opts = document.getElementById("quiz-options");
+  const bar      = document.getElementById("quiz-progress-bar");
+  const num      = document.getElementById("quiz-q-num");
+  const text     = document.getElementById("quiz-question");
+  const opts     = document.getElementById("quiz-options");
+  const backBtn  = document.getElementById("quiz-back-btn");
 
   if (bar)  bar.style.width    = pct + "%";
   if (num)  num.textContent    = `Question ${index + 1} of ${total}`;
   if (text) text.textContent   = q.question;
+  if (backBtn) backBtn.style.display = index > 0 ? "inline-flex" : "none";
+
+  // Mark previously selected answer if going back
+  const prevVal = quizAnswers[`${q.dimension}_q${index}`];
   if (opts) {
     opts.innerHTML = `
-      <button class="quiz-option" data-dim="${q.dimension}" data-val="${q.optionA.value}">
+      <button class="quiz-option${prevVal === q.optionA.value ? " selected" : ""}" data-dim="${q.dimension}" data-val="${q.optionA.value}">
         ${q.optionA.text}
       </button>
-      <button class="quiz-option" data-dim="${q.dimension}" data-val="${q.optionB.value}">
+      <button class="quiz-option${prevVal === q.optionB.value ? " selected" : ""}" data-dim="${q.dimension}" data-val="${q.optionB.value}">
         ${q.optionB.text}
       </button>`;
   }
@@ -182,11 +187,9 @@ function showQuizResult(type) {
     const bar = document.getElementById("quiz-progress-bar");
     if (bar) bar.style.width = "100%";
 
-    document.getElementById("result-type").textContent   = type;
-    document.getElementById("result-type").style.background = `linear-gradient(135deg, ${col}, #9b5de5)`;
-    document.getElementById("result-type").style.webkitBackgroundClip = "text";
-    document.getElementById("result-type").style.webkitTextFillColor  = "transparent";
-    document.getElementById("result-type").style.backgroundClip       = "text";
+    const resultTypeEl = document.getElementById("result-type");
+    resultTypeEl.textContent = type;
+    resultTypeEl.style.cssText += `;background:linear-gradient(135deg,${col},#9b5de5);background-clip:text;color:transparent;`;
 
     document.getElementById("result-role").textContent   = role;
     document.getElementById("result-desc").textContent   = desc;
@@ -291,6 +294,32 @@ document.addEventListener("DOMContentLoaded", () => {
         userType = computeFinalType();
         setTimeout(() => showQuizResult(userType), 280);
       }
+    });
+  }
+
+  // ── Quiz back button ──
+  const backBtn = document.getElementById("quiz-back-btn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (currentQ > 0) {
+        currentQ--;
+        renderQuestion(currentQ);
+      }
+    });
+  }
+
+  // ── Quiz retake button ──
+  const retakeBtn = document.getElementById("quiz-retake-btn");
+  if (retakeBtn) {
+    retakeBtn.addEventListener("click", () => {
+      quizAnswers = {}; currentQ = 0; userType = null;
+      const inner  = document.querySelector(".quiz-inner");
+      const result = document.getElementById("quiz-result");
+      if (inner)  inner.style.display = "";
+      if (result) result.classList.remove("visible");
+      const bar = document.getElementById("quiz-progress-bar");
+      if (bar) bar.style.width = "0%";
+      renderQuestion(0);
     });
   }
 

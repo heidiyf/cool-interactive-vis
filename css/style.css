@@ -321,6 +321,47 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(78,205,196,0.3);
 }
+.quiz-retake-btn {
+  background: transparent;
+  border: 1px solid #2a2a4e;
+  color: #6868a8;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 8px;
+  transition: all 0.18s;
+}
+.quiz-retake-btn:hover { border-color: #4ecdc4; color: #4ecdc4; }
+.quiz-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: #5a5a8a;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+  margin-top: 8px;
+  transition: color 0.15s;
+}
+.quiz-back-btn:hover { color: #4ecdc4; }
+
+/* Scatter focus ring */
+#chart-wrap {
+  border-radius: 8px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.2s;
+}
+#chart-wrap.scatter-focused {
+  outline-color: rgba(78, 205, 196, 0.45);
+}
 
 /* Scroll indicator */
 .scroll-hint {

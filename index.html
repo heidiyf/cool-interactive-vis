@@ -66,6 +66,7 @@
           <div class="quiz-q-num" id="quiz-q-num">Question 1 of 8</div>
           <div class="quiz-question" id="quiz-question">Loading…</div>
           <div class="quiz-options" id="quiz-options"></div>
+          <button id="quiz-back-btn" class="quiz-back-btn" style="display:none">&#8592; Back</button>
         </div>
 
         <!-- Result (hidden until quiz done) -->
@@ -76,6 +77,7 @@
           <img class="result-avatar" id="result-avatar" src="" alt="" />
           <div class="result-desc" id="result-desc"></div>
           <button class="btn-jump" id="btn-jump">See my type highlighted in the data ↓</button>
+          <button class="quiz-retake-btn" id="quiz-retake-btn">↺ Retake Quiz</button>
         </div>
       </div>
     </div>
@@ -186,7 +188,7 @@
 
       <div id="chart-wrap"><svg id="chart"></svg></div>
 
-      <div id="bar-wrap">
+      <div id="bar-wrap" style="position:relative">
         <div class="panel-title">All 16 Types — Ranked by Current X Metric <span class="panel-hint">Drag across bars to filter the scatter above</span></div>
         <svg id="bar-chart"></svg>
       </div>

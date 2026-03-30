@@ -66,7 +66,7 @@ const STORIES = [
 let state = {
   xM:"words_per_comment", yM:"qm_per_comment",
   hl:null, sel:null, playing:false, storyIdx:-1,
-  donutFilter:null, brushRange:null
+  donutFilter:null, brushRange:null, scatterFocused:false
 };
 let playTimer = null, data = [];
 
@@ -114,7 +114,9 @@ let currentZoomTransform = d3.zoomIdentity;
 const zoomBehavior = d3.zoom()
   .scaleExtent([0.5, 10])
   .filter(event => {
-    if (event.type === "wheel" || event.type === "touchstart") return true;
+    // Wheel/pinch zoom only when chart is focused
+    if (event.type === "wheel") return state.scatterFocused;
+    if (event.type === "touchstart") return state.scatterFocused;
     const cls = (event.target?.getAttribute("class") || "");
     return !cls.includes("bubble") && !cls.includes("blabel");
   })
@@ -126,6 +128,17 @@ const zoomBehavior = d3.zoom()
   });
 
 svg.call(zoomBehavior);
+
+// ── Scatter focus: enable zoom only when user has clicked into the chart ──
+function setScatterFocus(focused) {
+  state.scatterFocused = focused;
+  document.getElementById("chart-wrap").classList.toggle("scatter-focused", focused);
+}
+
+// Capture phase fires before D3 zoom can call stopPropagation
+document.addEventListener("mousedown", e => {
+  setScatterFocus(!!e.target.closest("#chart-wrap"));
+}, true);
 
 function applyZoom() {
   if (!data.length) return;
@@ -249,6 +262,13 @@ function initBar() {
     .style("font-size", "9.5px")
     .text("highlights matching bubbles above");
 
+  // ── SVG X-button that rides the top-right corner of the brush selection ──
+  const brushXBtn = barG.append("g").attr("class","brush-x-btn").style("display","none").style("cursor","pointer");
+  brushXBtn.append("circle").attr("r", 9).attr("fill","#1a1a34").attr("stroke","#9b5de5").attr("stroke-width",1.5);
+  brushXBtn.append("text").attr("text-anchor","middle").attr("dominant-baseline","middle")
+    .attr("fill","#c8c0f0").style("font-size","10px").style("font-weight","700").text("✕");
+  brushXBtn.on("click", () => { clearBrush(); render(); });
+
   barBrush = d3.brushX().extent([[0,0],[bw,bh]]).on("brush end", ev => {
     // Dismiss the hint on first brush interaction
     barG.select(".drag-hint-g")
@@ -257,10 +277,18 @@ function initBar() {
     state.brushRange = ev.selection
       ? [barXSc.invert(ev.selection[0]), barXSc.invert(ev.selection[1])]
       : null;
+    if (ev.selection) {
+      // Position X at top-right corner of the selection, just above the chart
+      brushXBtn.attr("transform", `translate(${ev.selection[1]}, -1)`).style("display", null);
+    } else {
+      brushXBtn.style("display", "none");
+    }
     render();
   });
   barBrushG = barG.append("g").attr("class","brush");
   barBrushG.call(barBrush);
+  // Ensure X button stays on top of the brush overlay
+  barG.node().appendChild(brushXBtn.node());
 }
 
 function clearBrush() {
@@ -290,7 +318,7 @@ function drawBar(animate) {
     .attr("x",0).attr("y",d=>barYSc(d.type)).attr("height",barYSc.bandwidth())
     .attr("width",0).attr("rx",2).attr("fill",d=>COLORS[d.temperament]).style("cursor","pointer")
     .on("mouseover",showTip).on("mousemove",moveTip).on("mouseout",hideTip)
-    .on("click",(ev,d)=>{ state.sel = state.sel && state.sel.type===d.type ? null : d; updateDetail(); render(false); });
+    .on("click",(_,d)=>{ state.sel = state.sel && state.sel.type===d.type ? null : d; updateDetail(); render(false); });
   bars = bEnt.merge(bars);
   bars.on("mouseover",showTip).on("mousemove",moveTip).on("mouseout",hideTip);
   bars.transition(t)
@@ -357,9 +385,9 @@ function drawDonut() {
     .attr("stroke","#0b0b16").attr("stroke-width",2)
     .attr("opacity",d=>!state.donutFilter||state.donutFilter===d.data.t?0.9:0.2)
     .style("cursor","pointer")
-    .on("mouseover",function(ev,d){ d3.select(this).attr("d",arcHov(d)); cCnt.text(d.data.count.toLocaleString()); cLbl.text(d.data.t); })
-    .on("mouseout",function(ev,d){ d3.select(this).attr("d",arcPath(d)); cCnt.text(state.donutFilter?d3.sum(data.filter(x=>x.temperament===state.donutFilter),x=>x.count).toLocaleString():total.toLocaleString()); cLbl.text(state.donutFilter||"all types"); })
-    .on("click",function(ev,d){ state.donutFilter=state.donutFilter===d.data.t?null:d.data.t; drawDonut(); render(); });
+    .on("mouseover",function(_,d){ d3.select(this).attr("d",arcHov(d)); cCnt.text(d.data.count.toLocaleString()); cLbl.text(d.data.t); })
+    .on("mouseout",function(_,d){ d3.select(this).attr("d",arcPath(d)); cCnt.text(state.donutFilter?d3.sum(data.filter(x=>x.temperament===state.donutFilter),x=>x.count).toLocaleString():total.toLocaleString()); cLbl.text(state.donutFilter||"all types"); })
+    .on("click",function(_,d){ state.donutFilter=state.donutFilter===d.data.t?null:d.data.t; drawDonut(); render(); });
   arcs.forEach(ad => {
     const pct=(ad.data.count/total*100).toFixed(0), [lx,ly]=arcPath.centroid(ad);
     dg.append("text").attr("x",lx).attr("y",ly).attr("text-anchor","middle").attr("dominant-baseline","middle")
@@ -379,7 +407,7 @@ function drawDonut() {
 // TOOLTIP
 // ════════════════════════════════════════════════════════════════════════════
 const tip = d3.select("#tip");
-function showTip(event, d) {
+function showTip(_, d) {
   tip.classed("show",true).html(`
     <div class="tip-head" style="color:${COLORS[d.temperament]}">${d.type} — ${ROLES[d.type]}</div>
     <div class="tip-row"><span class="tip-k">Users</span><span class="tip-v">${d.count.toLocaleString()}</span></div>
@@ -462,7 +490,7 @@ function render(animate = true) {
     .attr("transform", d => `translate(${zx(d[state.xM])},${zy(d[state.yM])})`)
     .style("cursor","pointer")
     .on("mouseover", showTip).on("mousemove", moveTip).on("mouseout", hideTip)
-    .on("click", (event, d) => {
+    .on("click", (_, d) => {
       state.sel = state.sel && state.sel.type === d.type ? null : d;
       updateDetail(); render();
     });
